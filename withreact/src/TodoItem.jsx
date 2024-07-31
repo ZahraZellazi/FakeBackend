@@ -1,7 +1,27 @@
+import React, { useState } from 'react';
 
-import React from 'react';
+const TodoItem = ({ todo, toggleComplete, deleteTodo, updateTodo }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editTitle, setEditTitle] = useState(todo.title);
 
-const TodoItem = ({ todo, toggleComplete, deleteTodo }) => {
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveClick = () => {
+    if (updateTodo) {
+      updateTodo(todo.id, { ...todo, title: editTitle });
+    } else {
+      console.error('updateTodo is not a function');
+    }
+    setIsEditing(false);
+  };
+
+  const handleCancelClick = () => {
+    setEditTitle(todo.title);
+    setIsEditing(false);
+  };
+
   return (
     <div>
       <input
@@ -9,9 +29,22 @@ const TodoItem = ({ todo, toggleComplete, deleteTodo }) => {
         checked={todo.completed}
         onChange={() => toggleComplete(todo.id)}
       />
-      <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
-        {todo.task}
-      </span>
+      {isEditing ? (
+        <div>
+          <input
+            type="text"
+            value={editTitle}
+            onChange={(e) => setEditTitle(e.target.value)}
+          />
+          <button onClick={handleSaveClick}>Save</button>
+          <button onClick={handleCancelClick}>Cancel</button>
+        </div>
+      ) : (
+        <span style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
+          {todo.title}
+        </span>
+      )}
+      <button onClick={handleEditClick}>Edit</button>
       <button onClick={() => deleteTodo(todo.id)}>Delete</button>
     </div>
   );
